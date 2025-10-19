@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { IMAGE_PATH } from "@/services/tmdb";
 import { useFavorites } from "@/providers/FavoritesContext";
@@ -15,6 +16,8 @@ interface Movie {
 export default function MovieCard({ movie }: { movie: Movie }) {
   const router = useRouter();
   const { FavoriteIcon } = useFavorites();
+  const { data: session } = useSession();
+
   const handleCardClick = () => {
     router.push(`/movie/${movie.id}`);
   };
@@ -25,13 +28,20 @@ export default function MovieCard({ movie }: { movie: Movie }) {
       className="relative cursor-pointer rounded-lg overflow-hidden shadow-lg transition-all duration-300 transform hover:scale-[1.03] bg-gray-800 group"
     >
 
-      <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-        <FavoriteIcon
-        
-          movieId={movie.id}
-          className="text-xl backdrop-blur-sm bg-black/30 rounded-full"
-        />
-      </div>
+      {session?.user && (
+        <div
+          className="
+            absolute top-2 right-2 z-10
+            opacity-100 md:opacity-0 md:group-hover:opacity-100
+            transition-opacity
+          "
+        >
+          <FavoriteIcon
+            movieId={movie.id}
+            className="text-xl backdrop-blur-sm bg-black/30 rounded-full p-1"
+          />
+        </div>
+      )}
 
       {movie.poster_path ? (
         <Image

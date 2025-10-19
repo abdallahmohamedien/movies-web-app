@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 interface FavoritesContextType {
   favoriteIds: number[];
@@ -38,7 +39,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
         interface Favorite {
           movieId: number;
         }
-        setFavoriteIds((data as Favorite[]).map(f => f.movieId));
+        setFavoriteIds((data as Favorite[]).map((f) => f.movieId));
       } catch (err) {
         console.error("Error loading favorites:", err);
       } finally {
@@ -66,6 +67,10 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
         prev.includes(movieId)
           ? prev.filter((id) => id !== movieId)
           : [...prev, movieId]
+      );
+      const isRemoved = favoriteIds.includes(movieId);
+      toast.success(
+        isRemoved ? "Removed from favorites ❌" : "Added to favorites ❤️"
       );
     } catch (err) {
       console.error("Error toggling favorite:", err);
